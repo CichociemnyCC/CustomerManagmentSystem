@@ -1,0 +1,118 @@
+﻿@model List<Client>
+@{
+    ViewData["Title"] = "Lista Klientów";
+}
+
+<h2>Lista Klientów</h2>
+
+<form method="get" class="mb-3 d-flex align-items-center gap-2">
+    <input type="text" name="search" class="form-control" placeholder="Wyszukaj" value="@Context.Request.Query["search"]" style="width: 600px" />
+    <select name="status" class="form-select" style="width:auto">
+        <option value="">Wszystko</option>
+        <option>Aktywne</option>
+        <option>Zakończone</option>
+        <option>Oczekuje</option>
+    </select>
+    <label for="pageSize" style="width: 140px">Wierszy na stronę:</label>
+    <select name="pageSize" id="pageSize" class="form-select w-auto" onchange="this.form.submit()">
+        <option value="10" selected="@(ViewBag.PageSize == 10 ? "selected" : null)">10</option>
+        <option value="25" selected="@(ViewBag.PageSize == 25 ? "selected" : null)">25</option>
+        <option value="50" selected="@(ViewBag.PageSize == 50 ? "selected" : null)">50</option>
+    </select>
+    <button class="btn btn-primary">Filtruj</button>
+</form>
+
+@{
+    int startItem = ((int)ViewBag.PageSize * ((int)ViewBag.Page - 1)) + 1;
+    int endItem = startItem + Model.Count - 1;
+    if (ViewBag.TotalItems == 0)
+    {
+        startItem = 0;
+        endItem = 0;
+    }
+}
+<p>Wyświetlane @startItem - @endItem z @ViewBag.TotalItems Klientów</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Klient</th>
+            <th>Usługi</th>
+            <th>Pakiety</th>
+            <th>Osoba Kontaktowa</th>
+            <th>Numer Umowy</th>
+            <th>Status</th>
+            <th>Start</th>
+            <th>Koniec</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            var today = DateTime.Today;
+            string statusColor;
+            string statusLabel;
+
+            if (c.ServiceStartDate.HasValue && today < c.ServiceStartDate.Value)
+            {
+                statusColor = "warning";
+                statusLabel = "Oczekuje";
+            }
+            else if (c.ServiceStartDate.HasValue && c.ServiceEndDate.HasValue
+                     && today >= c.ServiceStartDate.Value && today <= c.ServiceEndDate.Value)
+            {
+                statusColor = "success";
+                statusLabel = "Aktywne";
+            }
+            else if (c.ServiceEndDate.HasValue && today > c.ServiceEndDate.Value)
+            {
+                statusColor = "danger";
+                statusLabel = "Zakończone";
+            }
+            else
+            {
+                statusColor = "secondary";
+                statusLabel = "Błąd, Niemożna Wyświetlić";
+            }
+
+            <tr>
+                <td>@c.ClientName</td>
+                <td>@c.Services</td>
+                <td>@c.Packages</td>
+                <td>@c.ContactPerson</td>
+                <td>@c.ContractNumber</td>
+                <td><span class="badge bg-@statusColor">@statusLabel</span></td>
+                <td>@c.ServiceStartDate?.ToShortDateString()</td>
+                <td>@c.ServiceEndDate?.ToShortDateString()</td>
+                <td class="text-end">
+                    <a class="btn btn-sm btn-info" href="@Url.Action("Details", new { id = c.Id })">Szczegóły</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @( (ViewBag.Page <= 1) ? "disabled" : "" )">
+            <a class="page-link" href="@Url.Action("Index", new { 
+                page = (int)ViewBag.Page - 1, 
+                pageSize = (int)ViewBag.PageSize,
+                search = Context.Request.Query["search"],
+                status = Context.Request.Query["status"]
+            })">Poprzednia Strona</a>
+        </li>
+        <li class="page-item @( ((int)ViewBag.Page * (int)ViewBag.PageSize >= (int)ViewBag.TotalItems) ? "disabled" : "" )">
+            <a class="page-link" href="@Url.Action("Index", new { 
+                page = (int)ViewBag.Page + 1, 
+                pageSize = (int)ViewBag.PageSize,
+                search = Context.Request.Query["search"],
+                status = Context.Request.Query["status"]
+            })">Następna Strona</a>
+        </li>
+    </ul>
+</nav>
+
+<a class="btn btn-success" href="@Url.Action("Create")">➕ Dodaj Nowego Klienta</a>
+<a class="btn btn-outline-secondary" href="@Url.Action("ArchiveList")">🗄 Archiwum Klientów</a>

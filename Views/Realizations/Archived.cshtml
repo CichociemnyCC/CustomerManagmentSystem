@@ -1,0 +1,65 @@
+﻿@model List<CRM_Duo_Creative.Models.Realization>
+@{
+    ViewData["Title"] = "Zarchiwizowane Realizacje";
+}
+
+<h2>Zarchiwizowane Realizacje</h2>
+
+@{
+    int page = ViewBag.Page;
+    int pageSize = ViewBag.PageSize;
+    int totalItems = ViewBag.TotalItems;
+    int startItem = ((page - 1) * pageSize) + 1;
+    int endItem = Math.Min(startItem + pageSize - 1, totalItems);
+}
+<form method="get" class="mb-3 d-flex align-items-center gap-2">
+    <input type="text" name="search" value="@ViewBag.Search" class="form-control" placeholder="Szukaj..." />
+    <label for="pageSize">Wierszy na stronę:</label>
+    <select name="pageSize" class="form-select w-auto" onchange="this.form.submit()">
+        <option value="10" selected="@(pageSize == 10 ? "selected" : null)">10</option>
+        <option value="25" selected="@(pageSize == 25 ? "selected" : null)">25</option>
+        <option value="50" selected="@(pageSize == 50 ? "selected" : null)">50</option>
+    </select>
+    <button class="btn btn-primary">Filtruj</button>
+</form>
+<p>Wyświetlane @startItem - @endItem z @totalItems realizacji</p>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Klient</th>
+            <th>Usługi</th>
+            <th>Pakiety</th>
+            <th>Start</th>
+            <th>Koniec</th>
+            <th>Status</th>
+            <th>Osoba Wykonująca</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var r in Model)
+        {
+            <tr>
+                <td>@r.Client.ClientName</td>
+                <td>@r.Client.Services</td>
+                <td>@r.Client.Packages</td>
+                <td>@r.Client.ServiceStartDate?.ToShortDateString()</td>
+                <td>@r.Client.ServiceEndDate?.ToShortDateString()</td>
+                <td>
+                    <span class="badge bg-secondary">@r.Status</span>
+                </td>
+                <td>@(r.Client.AccessGrantedBy ?? "Nieprzypisany")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<nav>
+    <ul class="pagination">
+        <li class="page-item @(page <= 1 ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page - 1, pageSize = pageSize })">Poprzednia</a>
+        </li>
+        <li class="page-item @((page * pageSize >= totalItems) ? "disabled" : "")">
+            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page + 1, pageSize = pageSize })">Następna</a>
+        </li>
+    </ul>
+</nav>
+<a class="btn btn-secondary mb-3" href="@Url.Action("Index")">🔙 Powrót</a>

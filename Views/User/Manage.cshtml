@@ -1,0 +1,42 @@
+﻿@model ManageUserViewModel
+@{
+    ViewData["Title"] = "Zarządzanie kontem";
+}
+
+<h2>Zarządzanie kontem</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label>Email</label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <hr />
+    <h5>Zmiana hasła (opcjonalnie)</h5>
+
+    <div class="form-group">
+        <label>Aktualne hasło</label>
+        <input asp-for="CurrentPassword" class="form-control" />
+        <span asp-validation-for="CurrentPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Nowe hasło</label>
+        <input asp-for="NewPassword" class="form-control" />
+        <span asp-validation-for="NewPassword" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label>Powtórz nowe hasło</label>
+        <input asp-for="ConfirmPassword" class="form-control" />
+        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-2">Zapisz zmiany</button>
+</form>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success mt-3">@TempData["Success"]</div>
+}

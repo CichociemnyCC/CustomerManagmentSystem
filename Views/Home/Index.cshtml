@@ -1,0 +1,24 @@
+﻿@using CRM_Duo_Creative.Models
+@using Microsoft.AspNetCore.Identity
+@inject UserManager<ApplicationUser> UserManager
+
+<div class="container text-center mt-5">
+    @{
+        var teraz = DateTime.Now;
+        var user = await UserManager.GetUserAsync(User);
+
+    }
+    <div class="container text-center mt-5">
+        <h1>Aktualności CRM</h1>
+        <p>Witaj, @user.FirstName</p>
+        <p>Dzisiaj jest: @teraz.ToString("dd MMMM yyyy, HH:mm")</p>
+    </div>
+</div>
+<div class="container d-flex justify-content-center mt-4">
+    <div class="card shadow-sm p-4" style="width: 100%; max-width: 500px;">
+        <h4 class="card-title mb-3">Panel zarządzania kontem</h4>
+        <p class="card-text">Tutaj możesz zaktualizować swój adres email oraz zmienić hasło do konta.</p>
+        <a href="@Url.Action("Manage", "User")" class="btn btn-primary">Przejdź do zarządzania kontem</a>
+    </div>
+</div>
+

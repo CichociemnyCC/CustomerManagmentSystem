@@ -1,0 +1,60 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using CRM_Duo_Creative.Models
+@inject UserManager<ApplicationUser> UserManager
+
+@{
+    ViewData["Title"] = "Panel Administracyjny";
+    var user = await UserManager.GetUserAsync(User);
+}
+
+<div class="container mt-5">
+    <h1>Panel Administracyjny</h1>
+    <p>Witaj @user.FirstName To jest centrum zarządzania technicznego w CRM.</p>
+
+    <div class="row mt-4">
+        <!-- Zarządzanie użytkownikami -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Zarządzanie użytkownikami</h5>
+                <p>Tworzenie, edycja, blokowanie i przypisywanie ról.</p>
+                <a class="btn btn-primary" asp-controller="Admin" asp-action="Users">Przejdź</a>
+            </div>
+        </div>
+
+        <!-- Konfiguracja integracji -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Konfiguracja integracji</h5>
+                <p>Google Sheets, API, bazy danych i SMTP.</p>
+                <a class="btn btn-primary" asp-controller="Admin" asp-action="Integrations">Przejdź</a>
+            </div>
+        </div>
+
+        <!-- Logi i bezpieczeństwo -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Logi i bezpieczeństwo</h5>
+                <p>Historia logowań, zmiany danych i backup.</p>
+                <a class="btn btn-primary" asp-controller="Admin" asp-action="Logs">Przejdź</a>
+            </div>
+        </div>
+
+        <!-- Informacje o systemie -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Informacje o systemie</h5>
+                <p>Wersja aplikacji, licencja, aktualizacje.</p>
+                <a class="btn btn-primary" asp-controller="Admin" asp-action="License">Przejdź</a>
+            </div>
+        </div>
+
+        <!-- Dodawanie Pakietów i usług -->
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Zarządzanie usługami i pakietami</h5>
+                <p>Dodaj, edytuj lub usuń usługi (Services) oraz pakiety (Packages).</p>
+                <a class="btn btn-primary" asp-controller="Admin" asp-action="ServicesPackages">Przejdź</a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,90 @@
+﻿@{
+    var today = DateTime.Today;
+    string statusColor;
+    string statusLabel;
+
+    if (Model.ServiceStartDate != null && today < Model.ServiceStartDate)
+    {
+        statusColor = "warning";
+        statusLabel = "Oczekuje";
+    }
+    else if (Model.ServiceStartDate != null && Model.ServiceEndDate != null
+             && today >= Model.ServiceStartDate && today <= Model.ServiceEndDate)
+    {
+        statusColor = "success";
+        statusLabel = "Aktywne";
+    }
+    else if (Model.ServiceEndDate != null && today > Model.ServiceEndDate)
+    {
+        statusColor = "danger";
+        statusLabel = "Zakończone";
+    }
+    else
+    {
+        statusColor = "secondary";
+        statusLabel = "Nieznany";
+    }
+}
+<h2>Dane Klienta</h2>
+
+<table class="table table-bordered">
+    <tbody>
+        <tr><th>Klient</th><td>@Model.ClientName</td></tr>
+        <tr><th>Pochodzenie</th><td>@Model.Source</td></tr>
+        <tr><th>Usługi</th><td>@Model.Services</td></tr>
+        <tr><th>Pakiety</th><td>@Model.Packages</td></tr>
+        <tr><th>Numer Umowy</th><td>@Model.ContractNumber</td></tr>
+        <tr><th>Osoba Kontaktowa</th><td>@Model.ContactPerson</td></tr>
+        <tr><th>Dane Kontaktowe</th><td>@Model.ContactData</td></tr>
+        <tr><th>Nadane Dostępy</th><td>@Model.AccessGrantedBy</td></tr>
+        <tr><th>Konto Meta/ADS</th><td>@Model.MetaAccount</td></tr>
+        <tr><th>Ustalenia Meta/ADS</th><td>@Model.MetaAgreement</td></tr>
+        <tr><th>Dane Lokalne</th><td>@Model.LocalData</td></tr>
+        <tr>
+            <th>Sociale / WWW / Dysk Google</th>
+            <td>
+                @if (!string.IsNullOrWhiteSpace(Model.SocialWebGoogleDrive))
+                {
+                    var lines = Model.SocialWebGoogleDrive.Split('\n');
+                    <ul class="list-unstyled">
+                        @foreach (var line in lines)
+                        {
+                            var parts = line.Split('|');
+                            if (parts.Length == 2)
+                            {
+                                <li><a href="@parts[1].Trim()" target="_blank">@parts[0].Trim()</a></li>
+                            }
+                            else
+                            {
+                                <li>@line</li> <!-- fallback -->
+                            }
+                        }
+                    </ul>
+                }
+                else
+                {
+                    <span>Brak linków</span>
+                }
+            </td>
+        </tr>
+        <tr><th>Data Rozpoczęcia Umowy</th><td>@Model.ServiceStartDate?.ToShortDateString()</td></tr>
+        <tr><th>Status</th><td><span class="badge bg-@statusColor">@statusLabel</span></td></tr>
+        <tr><th>Data Zakończenia Umowy</th><td>@Model.ServiceEndDate?.ToShortDateString()</td></tr>
+        <tr><th>Dodatkowe Informacje</th><td>@Model.Notes</td></tr>
+    </tbody>
+</table>
+
+<div class="mt-3">
+    <a class="btn btn-secondary" href="@Url.Action("Index")">
+        🔙 Powrót Do Listy
+    </a>
+    <a class="btn btn-primary" href="@Url.Action("Edit", new { id = Model.Id })">
+        ✏️ Edytuj
+    </a>
+    <form asp-action="Archive" asp-route-id="@Model.Id" method="post" class="d-inline">
+        <button type="submit" class="btn btn-warning"
+                onclick="return confirm('Czy Napewno Chcesz Zarchiwizować Tego Klienta ?');">
+            🗄 Archiwum
+        </button>
+    </form>
+</div>

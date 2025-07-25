@@ -1,0 +1,41 @@
+﻿@model CRM_Duo_Creative.Models.IntegrationsViewModel
+
+@{
+    ViewData["Title"] = "Konfiguracja integracji";
+}
+
+<h2>Konfiguracja integracji</h2>
+
+<form asp-action="SaveIntegrations" method="post">
+    <div class="mb-3">
+        <label>Google Sheets API Key</label>
+        <input asp-for="GoogleSheetsApiKey" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Adres serwera MySQL / PostgreSQL</label>
+        <input asp-for="DatabaseHost" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>SMTP Serwer</label>
+        <input asp-for="SmtpHost" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>SMTP Port</label>
+        <input asp-for="SmtpPort" type="number" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>SMTP Login</label>
+        <input asp-for="SmtpLogin" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>SMTP Hasło</label>
+        <input asp-for="SmtpPassword" type="password" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-success">Zapisz</button>
+</form>

@@ -1,0 +1,79 @@
+﻿@{
+    ViewData["Title"] = "Zarządzanie usługami i pakietami";
+    var services = ViewBag.Services as List<Service>;
+    var packages = ViewBag.Packages as List<Package>;
+}
+
+<div class="container mt-5">
+    <h1>Zarządzanie usługami i pakietami</h1>
+
+    <div class="row mt-4">
+        <!-- Usługi -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Usługi (Services)</h5>
+                <form asp-action="AddService" method="post" class="d-flex mb-3 gap-2">
+                    <input type="text" name="serviceName" class="form-control" placeholder="Nowa usługa" required />
+                    <button type="submit" class="btn btn-success">Dodaj</button>
+                </form>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>Nazwa</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var s in services)
+                        {
+                            <tr>
+                                <td>@s.Name</td>
+                                <td class="text-end">
+                                    <form asp-action="DeleteService" asp-route-id="@s.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Na pewno usunąć tę usługę?');">
+                                            Usuń
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Pakiety -->
+        <div class="col-md-6 mb-4">
+            <div class="card shadow-sm p-3">
+                <h5>Pakiety (Packages)</h5>
+                <form asp-action="AddPackage" method="post" class="d-flex mb-3 gap-2">
+                    <input type="text" name="packageName" class="form-control" placeholder="Nowy pakiet" required />
+                    <button type="submit" class="btn btn-success">Dodaj</button>
+                </form>
+
+                <table class="table table-striped">
+                    <thead>
+                        <tr><th>Nazwa</th><th></th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var p in packages)
+                        {
+                            <tr>
+                                <td>@p.Name</td>
+                                <td class="text-end">
+                                    <form asp-action="DeletePackage" asp-route-id="@p.Id" method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger"
+                                                onclick="return confirm('Na pewno usunąć ten pakiet?');">
+                                            Usuń
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <a class="btn btn-secondary mt-3" href="@Url.Action("Index")">🔙 Powrót do panelu administracyjnego</a>
+</div>

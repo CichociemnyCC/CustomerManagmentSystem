@@ -1,0 +1,47 @@
+﻿@model CreateUserViewModel
+
+<div class="container mt-5">
+    <h2>Dodaj nowego użytkownika</h2>
+    @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+    <form asp-action="CreateUser" method="post">
+        <div class="mb-3">
+            <label>Email</label>
+            <input class="form-control" asp-for="Email" />
+            <span class="text-danger" asp-validation-for="Email"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Imię</label>
+            <input class="form-control" asp-for="FirstName" />
+            <span class="text-danger" asp-validation-for="FirstName"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Nazwisko</label>
+            <input class="form-control" asp-for="LastName" />
+            <span class="text-danger" asp-validation-for="LastName"></span>
+        </div>
+
+        <div class="mb-3">
+            <label>Hasło</label>
+            <input type="password" class="form-control" asp-for="Password" />
+            <span class="text-danger" asp-validation-for="Password"></span>
+        </div>
+
+
+        <div class="mb-3">
+            <label>Role</label>
+            @foreach (var role in Model.AllRoles)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="SelectedRoles" value="@role" />
+                    <label class="form-check-label">@role</label>
+                </div>
+            }
+        </div>
+
+        <button type="submit" class="btn btn-success">Dodaj użytkownika</button>
+        <a class="btn btn-secondary" asp-action="Users">Anuluj</a>
+    </form>
+</div>

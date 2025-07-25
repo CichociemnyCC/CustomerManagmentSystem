@@ -1,0 +1,116 @@
+﻿@model List<Client>
+@{
+    ViewData["Title"] = "Archived Clients";
+}
+
+<h2>Archiwum Klientów</h2>
+
+<form method="get" class="mb-3 d-flex align-items-center gap-2">
+    <input type="text" name="search" class="form-control" placeholder="Wyszukaj" value="@Context.Request.Query["search"]" />
+    <select name="pageSize" class="form-select" onchange="this.form.submit()">
+        <option value="10" selected="@(ViewBag.PageSize == 10 ? "selected" : null)">10 Wierszy</option>
+        <option value="10" selected="@(ViewBag.PageSize == 25 ? "selected" : null)">25 Wierszy</option>
+        <option value="10" selected="@(ViewBag.PageSize == 50 ? "selected" : null)">50 Wierszy</option>
+    </select>
+    <button class="btn btn-primary">Filtruj</button>
+</form>
+
+@{
+    int startItem = ((int)ViewBag.PageSize * ((int)ViewBag.Page - 1)) + 1;
+    int endItem = startItem + Model.Count - 1;
+    if (ViewBag.TotalItems == 0)
+    {
+        startItem = 0;
+        endItem = 0;
+    }
+}
+<p>Showing @startItem - @endItem of @ViewBag.TotalItems archived clients</p>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Klient</th>            
+            <th>Numer Umowy</th>
+            <th>Status</th>
+            <th>Start</th>
+            <th>Koniec</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var c in Model)
+        {
+            var today = DateTime.Today;
+            string statusColor;
+            string statusLabel;
+
+            if (c.ServiceStartDate.HasValue && today < c.ServiceStartDate.Value)
+            {
+                statusColor = "warning";
+                statusLabel = "Oczekuje";
+            }
+            else if (c.ServiceStartDate.HasValue && c.ServiceEndDate.HasValue
+                     && today >= c.ServiceStartDate.Value && today <= c.ServiceEndDate.Value)
+            {
+                statusColor = "success";
+                statusLabel = "Aktywne";
+            }
+            else if (c.ServiceEndDate.HasValue && today > c.ServiceEndDate.Value)
+            {
+                statusColor = "danger";
+                statusLabel = "Zakończone";
+            }
+            else
+            {
+                statusColor = "secondary";
+                statusLabel = "Błąd, Niemożna Wyświetlić";
+            }
+
+            <tr>
+                <td>@c.ClientName</td>               
+                <td>@c.ContractNumber</td>
+                <td><span class="badge bg-@statusColor">@statusLabel</span></td>
+                <td>@c.ServiceStartDate?.ToShortDateString()</td>
+                <td>@c.ServiceEndDate?.ToShortDateString()</td>
+                <td class="text-end">
+                    <a class="btn btn-info btn-sm" href="@Url.Action("Details", new { id = c.Id })">Szczegóły</a>
+
+                    <form asp-action="Reactivate" asp-route-id="@c.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-success btn-sm"
+                                onclick="return confirm('Na pewno przywrócić tego klienta do aktywnych?');">
+                            Reaktywuj
+                        </button>
+                    </form>
+
+                    <form asp-action="Delete" asp-route-id="@c.Id" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-danger btn-sm"
+                                onclick="return confirm('Na pewno trwale usunąć tego klienta?');">
+                            Usuń
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<nav>
+    <ul class="pagination">
+        <li class="page-item @( (ViewBag.Page <= 1) ? "disabled" : "" )">
+            <a class="page-link" href="@Url.Action("ArchiveList", new { 
+                page = (int)ViewBag.Page - 1, 
+                pageSize = (int)ViewBag.PageSize,
+                search = Context.Request.Query["search"]
+            })">Poprzednia Strona</a>
+        </li>
+        <li class="page-item @( ((int)ViewBag.Page * (int)ViewBag.PageSize >= (int)ViewBag.TotalItems) ? "disabled" : "" )">
+            <a class="page-link" href="@Url.Action("ArchiveList", new { 
+                page = (int)ViewBag.Page + 1, 
+                pageSize = (int)ViewBag.PageSize,
+                search = Context.Request.Query["search"]
+            })">Następna Strona</a>
+        </li>
+    </ul>
+</nav>
+
+<a class="btn btn-secondary" href="@Url.Action("Index")">Powrót Do Aktywnych Klientów</a>

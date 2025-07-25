@@ -1,0 +1,27 @@
+﻿@using CRM_Duo_Creative.Models
+@model List<LoginLog>
+
+<div class="container mt-5">
+    <h2>Logi logowań użytkowników</h2>
+    <table class="table table-striped mt-4">
+        <thead>
+            <tr>
+                <th>Email</th>
+                <th>Imię i nazwisko</th>
+                <th>IP</th>
+                <th>Data logowania</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var log in Model)
+            {
+                <tr>
+                    <td>@log.Email</td>
+                    <td>@log.FullName</td>
+                    <td>@log.IpAddress</td>
+                    <td>@log.LoginTime.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
