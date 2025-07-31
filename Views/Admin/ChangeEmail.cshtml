@@ -1,0 +1,25 @@
+﻿@model ChangeEmailViewModel
+@{
+    ViewData["Title"] = "Zmiana adresu e-mail";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="ChangeEmail" method="post">
+    <input type="hidden" asp-for="UserId" />
+
+    <div class="mb-3">
+        <label class="form-label">Obecny adres e-mail</label>
+        <input type="hidden" asp-for="CurrentEmail" />
+        <p class="form-control-plaintext">@Model.CurrentEmail</p>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Nowy adres e-mail</label>
+        <input class="form-control" asp-for="NewEmail" />
+        <span asp-validation-for="NewEmail" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Zapisz</button>
+    <a class="btn btn-secondary" asp-action="Users">Anuluj</a>
+</form>

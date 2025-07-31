@@ -57,6 +57,8 @@ namespace CRM_Duo_Creative.Controllers
         public async Task<IActionResult> EditUser(EditUserViewModel model)
         {
             var user = await _userManager.FindByIdAsync(model.Id);
+            if (user == null) return NotFound();
+
             user.FirstName = model.FirstName;
             user.LastName = model.LastName;
 
@@ -70,21 +72,6 @@ namespace CRM_Duo_Creative.Controllers
             await _userManager.AddToRolesAsync(user, model.SelectedRoles);
 
             await _userManager.UpdateAsync(user);
-
-            if (!string.IsNullOrWhiteSpace(model.NewPassword))
-            {
-                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
-                if (!result.Succeeded)
-                {
-                    foreach (var error in result.Errors)
-                        ModelState.AddModelError("", error.Description);
-
-                    model.AllRoles = _roleManager.Roles.Select(r => r.Name).ToList();
-                    model.CurrentRoles = (await _userManager.GetRolesAsync(user)).ToList();
-                    return View(model);
-                }
-            }
 
             return RedirectToAction("Users");
         }
@@ -215,5 +202,45 @@ namespace CRM_Duo_Creative.Controllers
             }
             return RedirectToAction("ServicesPackages");
         }
+        [HttpGet]
+        public async Task<IActionResult> ChangeEmail(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null) return NotFound();
+
+            var model = new ChangeEmailViewModel
+            {
+                UserId = user.Id,
+                CurrentEmail = user.Email
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ChangeEmail(ChangeEmailViewModel model)
+        {
+            if (!ModelState.IsValid) return View(model);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null) return NotFound();
+
+            user.Email = model.NewEmail;
+            user.UserName = model.NewEmail; // Jeśli login to e-mail
+
+            var result = await _userManager.UpdateAsync(user);
+            if (result.Succeeded)
+            {
+                TempData["Success"] = "Adres e-mail został zaktualizowany.";
+                return RedirectToAction("Users");
+            }
+
+            foreach (var error in result.Errors)
+                ModelState.AddModelError("", error.Description);
+
+            return View(model);
+        }
+
     }
 }

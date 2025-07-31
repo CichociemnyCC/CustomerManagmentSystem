@@ -12,12 +12,4 @@ public class EditUserViewModel
     public List<string> CurrentRoles { get; set; } = new();
     public List<string> AllRoles { get; set; } = new();
     public List<string> SelectedRoles { get; set; } = new();
-    [DataType(DataType.Password)]
-    [MinLength(6, ErrorMessage = "Hasło musi mieć co najmniej 6 znaków.")]
-    public string? NewPassword { get; set; }
-
-    [DataType(DataType.Password)]
-    [Compare("NewPassword", ErrorMessage = "Hasła nie są zgodne.")]
-    public string? ConfirmPassword { get; set; }
-
 }

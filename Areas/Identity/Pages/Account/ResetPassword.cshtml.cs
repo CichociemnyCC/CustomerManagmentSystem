@@ -2,23 +2,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 #nullable disable
 
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Text;
-using System.Threading.Tasks;
+using CRM_Duo_Creative.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace CRM_Duo_Creative.Areas.Identity.Pages.Account
 {
     public class ResetPasswordModel : PageModel
     {
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ResetPasswordModel(UserManager<IdentityUser> userManager)
+        public ResetPasswordModel(UserManager<ApplicationUser> userManager)
         {
             _userManager = userManager;
         }
@@ -34,6 +36,11 @@ namespace CRM_Duo_Creative.Areas.Identity.Pages.Account
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        [BindProperty]
+        public string Email { get; set; }
+
+        [BindProperty]
+        public string ResetToken { get; set; }
         public class InputModel
         {
             /// <summary>
@@ -68,23 +75,31 @@ namespace CRM_Duo_Creative.Areas.Identity.Pages.Account
             /// </summary>
             [Required]
             public string Code { get; set; }
-
+                       
         }
 
-        public IActionResult OnGet(string code = null)
+        public async Task<IActionResult> OnGetAsync(string email)
         {
-            if (code == null)
+            if (string.IsNullOrEmpty(email))
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return RedirectToPage("./Login");
             }
-            else
+
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
             {
-                Input = new InputModel
-                {
-                    Code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code))
-                };
-                return Page();
+                return RedirectToPage("./Login");
             }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            Input = new InputModel
+            {
+                Email = email,
+                Code = token
+            };
+
+            return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -106,7 +121,6 @@ namespace CRM_Duo_Creative.Areas.Identity.Pages.Account
             {
                 return RedirectToPage("./ResetPasswordConfirmation");
             }
-
             foreach (var error in result.Errors)
             {
                 ModelState.AddModelError(string.Empty, error.Description);

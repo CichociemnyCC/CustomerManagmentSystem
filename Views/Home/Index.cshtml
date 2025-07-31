@@ -14,11 +14,14 @@
         <p>Dzisiaj jest: @teraz.ToString("dd MMMM yyyy, HH:mm")</p>
     </div>
 </div>
-<div class="container d-flex justify-content-center mt-4">
-    <div class="card shadow-sm p-4" style="width: 100%; max-width: 500px;">
-        <h4 class="card-title mb-3">Panel zarządzania kontem</h4>
-        <p class="card-text">Tutaj możesz zaktualizować swój adres email oraz zmienić hasło do konta.</p>
-        <a href="@Url.Action("Manage", "User")" class="btn btn-primary">Przejdź do zarządzania kontem</a>
+<div class="card mt-4 mx-auto" style="max-width: 400px;">
+    <div class="card-body">
+        <h5 class="card-title">Zarządzanie kontem</h5>
+        <p class="card-text">Możesz tutaj zresetować swoje hasło.</p>
+        <a asp-area="Identity"
+           asp-page="/Account/ResetPassword"
+           asp-route-email="@user.Email"
+           class="btn btn-warning">Zresetuj hasło</a>
     </div>
 </div>
 

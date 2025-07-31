@@ -15,16 +15,6 @@
             <input class="form-control" asp-for="LastName" />
         </div>
         <div class="mb-3">
-            <label>Nowe hasło</label>
-            <input asp-for="NewPassword" type="password" class="form-control" />
-            <span asp-validation-for="NewPassword" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label>Powtórz nowe hasło</label>
-            <input asp-for="ConfirmPassword" type="password" class="form-control" />
-            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
             <label>Blokada konta</label>
             <input type="checkbox" asp-for="IsBlocked" />
         </div>
@@ -41,7 +31,7 @@
             }
         </div>
 
-        <button type="submit" class="btn btn-success">Zapisz</button>
+        <button type="submit" name="submit" class="btn btn-success">Zapisz</button>
         <a class="btn btn-secondary" asp-action="Users">Anuluj</a>
     </form>
 </div>

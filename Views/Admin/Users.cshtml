@@ -44,6 +44,19 @@
                         <a class="btn btn-sm btn-primary" asp-action="EditUser" asp-route-id="@user.Id">Edytuj</a>
                         <a class="btn btn-sm btn-danger" asp-action="DeleteUser" asp-route-id="@user.Id">Usuń</a>
                     </td>
+                    <td>
+                        <a asp-area="Identity"
+                           asp-page="/Account/ResetPassword"
+                           asp-route-email="@user.Email"
+                           class="btn btn-warning btn-sm">
+                            Resetuj Hasło
+                        </a>
+                    </td>
+                    <td>
+                        <a asp-controller="Admin" asp-action="ChangeEmail" asp-route-id="@user.Id" class="btn btn-sm btn-warning">
+                            Zmień E-mail
+                        </a>
+                    </td>
                 </tr>
             }
         </tbody>
