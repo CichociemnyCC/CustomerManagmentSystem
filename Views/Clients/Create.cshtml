@@ -138,19 +138,28 @@
         });
     </script>
     <script>
-        const startPicker = flatpickr("#serviceStartDate", {
-            dateFormat: "d.m.Y",
-           allowInput: false
-       });
-    
-        const endPicker = flatpickr("#serviceEndDate", {
-            dateFormat: "d.m.Y",
+        flatpickr("#serviceStartDate", {
+            altInput: true,
+            altFormat: "d.m.Y",
+            dateFormat: "Y-m-d",
             allowInput: false
         });
     
-        // klik na ikonę otwiera kalendarz
-       document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
-        document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
+        flatpickr("#serviceEndDate", {
+           altInput: true,
+           altFormat: "d.m.Y",
+           dateFormat: "Y-m-d",
+           allowInput: false
+       });
+
+       // Klik na ikonę otwiera kalendarz
+       document.getElementById("startIcon").addEventListener("click", () => {
+           document.querySelector("#serviceStartDate")._flatpickr.open();
+       });
+    
+       document.getElementById("endIcon").addEventListener("click", () => {
+           document.querySelector("#serviceEndDate")._flatpickr.open();
+       });
     </script>
 }
 

@@ -155,27 +155,33 @@
         const startInput = document.getElementById("serviceStartDate");
         const endInput = document.getElementById("serviceEndDate");
     
-       const endPicker = flatpickr(endInput, {
-            dateFormat: "d.m.Y",
+        const endPicker = flatpickr(endInput, {
+            altInput: true,
+            altFormat: "d.m.Y",
+            dateFormat: "Y-m-d",
             allowInput: false
        });
     
         const startPicker = flatpickr(startInput, {
-            dateFormat: "d.m.Y",
-           allowInput: false,
+            altInput: true,
+            altFormat: "d.m.Y",
+            dateFormat: "Y-m-d",
+            allowInput: false,
             onChange: function (selectedDates) {
                 if (selectedDates.length > 0) {
                     endPicker.set("minDate", selectedDates[0]);
+    
                     const endDate = endPicker.selectedDates[0];
                     if (endDate && endDate < selectedDates[0]) {
-                        endPicker.clear();
-                    }
-                } else {
+                       endPicker.clear();
+                   }
+               } else {
                     endPicker.set("minDate", null);
                 }
             }
         });
     
+        // klik na ikonę otwiera kalendarz
         document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
         document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
     </script>
