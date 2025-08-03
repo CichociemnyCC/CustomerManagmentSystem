@@ -1,8 +1,10 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace CRM_Duo_Creative.Models
 {
-    public class Lead
+    public class Lead : IValidatableObject
     {
         public int Id { get; set; }
         [Required]
@@ -24,5 +26,17 @@ namespace CRM_Duo_Creative.Models
         public DateTime? ServiceEndDate { get; set; }
 
         public bool IsConverted { get; set; } = false;
+        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+        {
+            if (ServiceStartDate.HasValue && ServiceEndDate.HasValue)
+            {
+                if (ServiceEndDate < ServiceStartDate)
+                {
+                    yield return new ValidationResult(
+                        "Data zakończenia nie może być wcześniejsza niż data rozpoczęcia.",
+                        new[] { nameof(ServiceEndDate) });
+                }
+            }
+        }
     }
 }

@@ -80,11 +80,33 @@
     </div>
     <div class="mb-3">
         <label>Data Rozpoczęcia Umowy</label>
-        <input asp-for="ServiceStartDate" type="date" class="form-control" />
+        <div class="input-group" style="max-width: 250px;">
+            <input id="serviceStartDate" 
+                   name="ServiceStartDate" 
+                   class="form-control" 
+                   type="text" 
+                  placeholder="Wybierz datę" 
+                  readonly />
+           <span class="input-group-text bg-white" id="startIcon" style="cursor: pointer;">
+               <i class="bi bi-calendar3" style="font-size: 1.5rem;"></i>
+           </span>
+       </div>
+        <span asp-validation-for="ServiceStartDate" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label>Data Zakończenia Umowy</label>
-        <input asp-for="ServiceEndDate" type="date" class="form-control" />
+        <div class="input-group" style="max-width: 250px;">
+            <input id="serviceEndDate" 
+                   name="ServiceEndDate" 
+                   class="form-control" 
+                   type="text" 
+                   placeholder="Wybierz datę" 
+                   readonly />
+           <span class="input-group-text bg-white" id="endIcon" style="cursor: pointer;">
+               <i class="bi bi-calendar3" style="font-size: 1.5rem;"></i>
+            </span>
+        </div>
+        <span asp-validation-for="ServiceEndDate" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label>Dodatkowe Informacje</label>
@@ -105,5 +127,48 @@
         $(document).ready(function () {
             $('.selectpicker').selectpicker();
         });
+    </script>
+    <script>
+        const startPicker = flatpickr("#serviceStartDate", {
+            dateFormat: "d.m.Y",
+           allowInput: false
+       });
+    
+        const endPicker = flatpickr("#serviceEndDate", {
+            dateFormat: "d.m.Y",
+            allowInput: false
+        });
+    
+        // klik na ikonę otwiera kalendarz
+       document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
+        document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
+    </script>
+    <script>
+        const startInput = document.getElementById("serviceStartDate");
+        const endInput = document.getElementById("serviceEndDate");
+    
+       const endPicker = flatpickr(endInput, {
+            dateFormat: "d.m.Y",
+            allowInput: false
+       });
+    
+        const startPicker = flatpickr(startInput, {
+            dateFormat: "d.m.Y",
+           allowInput: false,
+            onChange: function (selectedDates) {
+                if (selectedDates.length > 0) {
+                    endPicker.set("minDate", selectedDates[0]);
+                    const endDate = endPicker.selectedDates[0];
+                    if (endDate && endDate < selectedDates[0]) {
+                        endPicker.clear();
+                    }
+                } else {
+                    endPicker.set("minDate", null);
+                }
+            }
+        });
+    
+        document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
+        document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
     </script>
 }
