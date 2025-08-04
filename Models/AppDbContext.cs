@@ -16,6 +16,8 @@ namespace CRM_Duo_Creative.Models
         public DbSet<Package> Packages { get; set; }
         public DbSet<Realization> Realizations { get; set; }
         public DbSet<Lead> Leads { get; set; }
+        public DbSet<RealizationStatus> RealizationStatuses { get; set; }
+
 
     }
 

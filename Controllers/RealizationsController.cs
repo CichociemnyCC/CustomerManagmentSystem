@@ -22,6 +22,7 @@ namespace CRM_Duo_Creative.Controllers
 
         public async Task<IActionResult> Index(string month = null, int? editId = null, int page = 1, int pageSize = 10, string? assignedTo = null)
         {
+            ViewBag.SelectedAssignedTo = assignedTo;
             var user = await _userManager.GetUserAsync(User);
             var isPrivileged = User.IsInRole("Admin") || User.IsInRole("Dyrektor") || User.IsInRole("Kierownik") || User.IsInRole("Manager");
 
@@ -31,12 +32,13 @@ namespace CRM_Duo_Creative.Controllers
 
             var realizationsQuery = _context.Realizations
                 .Include(r => r.Client)
+                .Include(r => r.Statuses)
                 .Where(r =>
                     !r.IsArchived &&
                     r.Client.ServiceStartDate.HasValue &&
                     r.Client.ServiceEndDate.HasValue &&
-                    r.Client.ServiceStartDate.Value <= targetMonth.AddMonths(1).AddDays(-1) && // do końca miesiąca
-                    r.Client.ServiceEndDate.Value >= new DateTime(targetMonth.Year, targetMonth.Month, 1) // od początku miesiąca
+                    r.Client.ServiceStartDate.Value <= targetMonth.AddMonths(1).AddDays(-1) &&
+                    r.Client.ServiceEndDate.Value >= new DateTime(targetMonth.Year, targetMonth.Month, 1)
                 );
             if (!string.IsNullOrEmpty(assignedTo))
             {
@@ -109,15 +111,44 @@ namespace CRM_Duo_Creative.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
+        public async Task<IActionResult> UpdateStatus(int id, string status, string month, int page, int pageSize, string assignedTo)
         {
-            var realization = await _context.Realizations.FindAsync(id);
+            if (page < 1) page = 1;
+            if (pageSize < 1) pageSize = 10;
+            var realization = await _context.Realizations
+                .Include(r => r.Statuses)
+                .FirstOrDefaultAsync(r => r.Id == id);
+
             if (realization == null)
                 return NotFound();
 
-            realization.Status = status;
+            var selectedMonth = DateTime.ParseExact(month, "yyyy-MM", CultureInfo.InvariantCulture);
+
+            var statusEntry = realization.Statuses.FirstOrDefault(s => s.Month == selectedMonth);
+
+            if (statusEntry == null)
+            {
+                statusEntry = new RealizationStatus
+                {
+                    RealizationId = realization.Id,
+                    Month = selectedMonth,
+                    Status = status
+                };
+                _context.RealizationStatuses.Add(statusEntry);
+            }
+            else
+            {
+                statusEntry.Status = status;
+            }
+
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index", new { month = realization.Month.ToString("yyyy-MM") });
+            return RedirectToAction("Index", new {
+                month = selectedMonth.ToString("yyyy-MM"),
+                page = page,
+                pageSize = pageSize,
+                assignedTo = assignedTo,
+                editId = (int?)null
+            });
         }
 
         [Authorize(Roles = "Admin, Dyrektor, Kierownik, Manager")]
@@ -178,6 +209,6 @@ namespace CRM_Duo_Creative.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", new { month = realization.Month.ToString("yyyy-MM") });
         }
-
+       
     }
 }

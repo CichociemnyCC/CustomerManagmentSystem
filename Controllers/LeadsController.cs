@@ -99,14 +99,24 @@ public class LeadsController : Controller
         };
 
         _context.Clients.Add(client);
-        await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync(); // zapisujemy, żeby klient miał ID
+
         var realization = new Realization
         {
             ClientId = client.Id,
+            Month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+        };
+        _context.Realizations.Add(realization);
+        await _context.SaveChangesAsync();
+
+        var status = new RealizationStatus
+        {
+            RealizationId = realization.Id,
             Month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
             Status = "Brak Danych"
         };
-        _context.Realizations.Add(realization);
+        _context.RealizationStatuses.Add(status);
+
         _context.Leads.Remove(lead);
         await _context.SaveChangesAsync();
 

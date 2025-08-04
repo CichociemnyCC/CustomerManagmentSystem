@@ -100,7 +100,8 @@
                 page = (int)ViewBag.Page - 1, 
                 pageSize = (int)ViewBag.PageSize,
                 search = Context.Request.Query["search"],
-                status = Context.Request.Query["status"]
+                status = Context.Request.Query["status"],
+                assignedTo = ViewBag.SelectedAssignedTo
             })">Poprzednia Strona</a>
         </li>
         <li class="page-item @( ((int)ViewBag.Page * (int)ViewBag.PageSize >= (int)ViewBag.TotalItems) ? "disabled" : "" )">
@@ -108,7 +109,8 @@
                 page = (int)ViewBag.Page + 1, 
                 pageSize = (int)ViewBag.PageSize,
                 search = Context.Request.Query["search"],
-                status = Context.Request.Query["status"]
+                status = Context.Request.Query["status"],
+                assignedTo = ViewBag.SelectedAssignedTo
             })">Następna Strona</a>
         </li>
     </ul>

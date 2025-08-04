@@ -55,10 +55,10 @@
 <nav>
     <ul class="pagination">
         <li class="page-item @(page <= 1 ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page - 1, pageSize = pageSize })">Poprzednia</a>
+            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page - 1, pageSize = pageSize, assignedTo = ViewBag.SelectedAssignedTo })">Poprzednia</a>
         </li>
         <li class="page-item @((page * pageSize >= totalItems) ? "disabled" : "")">
-            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page + 1, pageSize = pageSize })">Następna</a>
+            <a class="page-link" href="@Url.Action("Archived", new { search = ViewBag.Search, page = page + 1, pageSize = pageSize, assignedTo = ViewBag.SelectedAssignedTo })">Następna</a>
         </li>
     </ul>
 </nav>

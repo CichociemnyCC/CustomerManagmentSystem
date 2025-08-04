@@ -1,4 +1,5 @@
 ﻿@model List<Realization>
+@using System.Globalization
 @{
     ViewData["Title"] = "Realizations";
     var month = ViewBag.SelectedMonth as string;
@@ -80,30 +81,58 @@
                     @if (editId == r.Id)
                     {
                         <form method="post" asp-action="UpdateStatus" class="d-flex gap-2">
+                            @Html.AntiForgeryToken()
                             <input type="hidden" name="id" value="@r.Id" />
+                            <input type="hidden" name="month" value="@ViewBag.SelectedMonth" />
+                            <input type="hidden" name="assignedTo" value="@Context.Request.Query["assignedTo"]" />
+                            <input type="hidden" name="page" value="@ViewBag.Page" />
+                            <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+                            @{
+                                var currentMonth = DateTime.ParseExact(ViewBag.SelectedMonth?.ToString() ?? DateTime.Today.ToString("yyyy-MM"), "yyyy-MM", CultureInfo.InvariantCulture);
+                                var statusEntry = r.Statuses?.FirstOrDefault(s => s.Month == currentMonth);
+                                var currentStatus = statusEntry?.Status ?? "Brak Danych";
+                            }
                             <select name="status" class="form-select">
-                                <option selected="@("Nie rozpoczęte" == r.Status)">Nie rozpoczęte</option>
-                                <option selected="@("W trakcie" == r.Status)">W trakcie</option>
-                                <option selected="@("Zakończone" == r.Status)">Zakończone</option>
-                                <option selected="@("Dostępne od następnego Miesiąca" == r.Status)">Dostępne od następnego Miesiąca</option>
+                                <option selected="@(currentStatus == "Nie można wykonać")">Nie można wykonać</option>
+                                <option selected="@(currentStatus == "Nie rozpoczęte")">Nie rozpoczęte</option>
+                                <option selected="@(currentStatus == "W trakcie")">W trakcie</option>
+                                <option selected="@(currentStatus == "Zakończone")">Zakończone</option>
+                                <option selected="@(currentStatus == "Dostępne od następnego Miesiąca")">Dostępne od następnego Miesiąca</option>
                             </select>
                             <button type="submit" class="btn btn-success btn-sm">Zapisz</button>
                             <a href="@Url.Action("Index", new { month = ViewBag.SelectedMonth })" class="btn btn-secondary btn-sm">Anuluj</a>
                         </form>
                     }
                     else
-                    {
-                        string badgeClass = r.Status switch
+                    {                                           
+                         var currentMonth = DateTime.ParseExact(
+                            ViewBag.SelectedMonth?.ToString() ?? DateTime.Today.ToString("yyyy-MM"),
+                            "yyyy-MM",
+                            CultureInfo.InvariantCulture
+                        );
+                    
+                        var statusEntry = r.Statuses?.FirstOrDefault(s => s.Month == currentMonth);
+                        var knownStatuses = new[] {
+                            "Nie rozpoczęte", "W trakcie", "Zakończone", 
+                            "Dostępne od następnego Miesiąca", "Nie można wykonać"
+                        };
+
+                        var status = knownStatuses.Contains(statusEntry?.Status)
+                           ? statusEntry.Status
+                           : "Brak Danych";
+
+                        string badgeClass = status switch
                         {
                             "Nie rozpoczęte" => "bg-danger",
                             "W trakcie" => "bg-warning text-dark",
                             "Zakończone" => "bg-success",
                             "Dostępne od następnego Miesiąca" => "bg-primary",
+                            "Nie można wykonać" => "bg-dark text-white",
+                            "Brak Danych" => "bg-secondary",
                             _ => "bg-secondary"
                         };
-
-                        <span class="badge @badgeClass">@r.Status</span>                       
-                    }
+                        <span class="badge @badgeClass">@status</span>
+                    }                   
                 </td>
                 <td>@(r.AssignedUser != null ? $"{r.AssignedUser.FirstName} {r.AssignedUser.LastName}" : "Nieprzypisany")</td>
                 <td>
@@ -113,8 +142,11 @@
                     else
                     {
                         <form method="get" asp-action="Index" class="d-inline">
-                            <input type="hidden" name="editId" value="@r.Id" />
+                            <input type="hidden" name="editid" value="@r.Id" />
                             <input type="hidden" name="month" value="@ViewBag.SelectedMonth" />
+                            <input type="hidden" name="page" value="@ViewBag.Page" />
+                            <input type="hidden" name="pageSize" value="@ViewBag.PageSize" />
+                            <input type="hidden" name="assignedTo" value="@ViewBag.SelectedAssignedTo" />
                             <button type="submit" class="btn btn-outline-primary btn-sm">Edytuj</button>
                         </form>
                     }
@@ -134,14 +166,16 @@
             <a class="page-link" href="@Url.Action("Index", new { 
                 page = (int)ViewBag.Page - 1, 
                 pageSize = (int)ViewBag.PageSize,
-                month = ViewBag.SelectedMonth 
+                month = ViewBag.SelectedMonth,
+                assignedTo = ViewBag.SelectedAssignedTo
             })">Poprzednia Strona</a>
         </li>
         <li class="page-item @( ((int)ViewBag.Page * (int)ViewBag.PageSize >= (int)ViewBag.TotalItems) ? "disabled" : "" )">
             <a class="page-link" href="@Url.Action("Index", new { 
                 page = (int)ViewBag.Page + 1, 
                 pageSize = (int)ViewBag.PageSize,
-                month = ViewBag.SelectedMonth 
+                month = ViewBag.SelectedMonth,
+                assignedTo = ViewBag.SelectedAssignedTo
             })">Następna Strona</a>
         </li>
     </ul>

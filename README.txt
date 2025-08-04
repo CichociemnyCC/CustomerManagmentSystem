@@ -36,6 +36,11 @@
 
 Changelog
 
+Aktualizacja 1.4 (DatabaseShenanigans)
+-Naprawiono w realizacjach zapisywanie stanu realizacji w bazie danych
+-Naprawiono resetowanie się UI w realizacja po wciśnięciu ,,Edytuj" i ,,Zapisz"
+-Dodano nowy status w realizacjach oraz zabezpieczenie rozpoznawania statusów.
+
 Aktualizacja 1.3 (BugFixy)
 -Kolejna Poprawka Dat tylko że w client/edit
 -Naprawiono Usuwanie Uzytkowników

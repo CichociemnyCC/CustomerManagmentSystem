@@ -86,6 +86,7 @@ namespace CRM_Duo_Creative.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(Client client)
         {
             client.Services = string.Join(", ", Request.Form["SelectedServices"]);
@@ -102,23 +103,30 @@ namespace CRM_Duo_Creative.Controllers
 
             if (ModelState.IsValid)
             {
+                // Zapisz klienta
                 _context.Clients.Add(client);
-                _context.SaveChanges();
-                _context.Realizations.Add(new Realization
+                _context.SaveChanges(); // klient.Id dostępne
+
+                // Utwórz realizację
+                var realization = new Realization
                 {
                     ClientId = client.Id,
-                    Month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
+                    Month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1)
+                };
+                _context.Realizations.Add(realization);
+                _context.SaveChanges(); // realization.Id dostępne
+
+                // Dodaj status powiązany z realizacją
+                var status = new RealizationStatus
+                {
+                    RealizationId = realization.Id,
+                    Month = realization.Month,
                     Status = "Brak Danych"
-                });
+                };
+                _context.RealizationStatuses.Add(status);
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
-            var realization = new Realization
-            {
-                ClientId = client.Id,
-                Month = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1),
-                Status = "Brak Danych"
-            };
 
             ViewBag.Services = _context.Services.Select(s => s.Name).ToList();
             ViewBag.Packages = _context.Packages.Select(p => p.Name).ToList();

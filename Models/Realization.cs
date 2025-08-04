@@ -16,6 +16,7 @@ namespace CRM_Duo_Creative.Models
 
         [ForeignKey("AssignedTo")]
         public ApplicationUser? AssignedUser { get; set; }
+        public List<RealizationStatus> Statuses { get; set; } = new();
 
 
     }
