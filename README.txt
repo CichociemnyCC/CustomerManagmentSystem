@@ -36,6 +36,11 @@
 
 Changelog
 
+Aktualizacja 1.3 (BugFixy)
+-Kolejna Poprawka Dat tylko że w client/edit
+-Naprawiono Usuwanie Uzytkowników
+-Session Inactive Time Limit (Testy)
+
 Aktualizacja 1.2 (Emergency FIX)
 -Naprawiono Krytyczny Problem z Wpisywaniem Dat
 

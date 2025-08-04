@@ -137,28 +137,41 @@
         });
     </script>
     <script>
-        flatpickr("#serviceStartDate", {
+        const startInput = document.getElementById("serviceStartDate");
+        const endInput = document.getElementById("serviceEndDate");
+
+        // Funkcja zamienia "dd.mm.yyyy" -> "yyyy-mm-dd"
+        function parsePolishDateToIso(dateString) {
+            const parts = dateString.split(".");
+            if (parts.length !== 3) return null;
+            const [day, month, year] = parts;
+            return `${year}-${month}-${day}`;
+        }
+
+        flatpickr(startInput, {
             altInput: true,
             altFormat: "d.m.Y",
             dateFormat: "Y-m-d",
-            allowInput: false
+            allowInput: false,
+            defaultDate: parsePolishDateToIso(startInput.value)
         });
-    
-        flatpickr("#serviceEndDate", {
-           altInput: true,
-           altFormat: "d.m.Y",
-           dateFormat: "Y-m-d",
-           allowInput: false
-       });
 
-       // Klik na ikonę otwiera kalendarz
-       document.getElementById("startIcon").addEventListener("click", () => {
-           document.querySelector("#serviceStartDate")._flatpickr.open();
-       });
-    
-       document.getElementById("endIcon").addEventListener("click", () => {
-           document.querySelector("#serviceEndDate")._flatpickr.open();
-       });
+        flatpickr(endInput, {
+            altInput: true,
+            altFormat: "d.m.Y",
+            dateFormat: "Y-m-d",
+            allowInput: false,
+            defaultDate: parsePolishDateToIso(endInput.value)
+        });
+
+        // Klik na ikonę otwiera kalendarz
+        document.getElementById("startIcon").addEventListener("click", () => {
+            document.querySelector("#serviceStartDate")._flatpickr.open();
+        });
+
+        document.getElementById("endIcon").addEventListener("click", () => {
+            document.querySelector("#serviceEndDate")._flatpickr.open();
+        });
     </script>
 }
 

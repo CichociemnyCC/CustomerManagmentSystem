@@ -75,7 +75,7 @@ namespace CRM_Duo_Creative.Controllers
 
             return RedirectToAction("Users");
         }
-
+        [HttpGet]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
@@ -242,5 +242,28 @@ namespace CRM_Duo_Creative.Controllers
             return View(model);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteUserConfirmed(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+            if (!result.Succeeded)
+            {
+                ModelState.AddModelError("", "Nie udało się usunąć użytkownika.");
+                return RedirectToAction("Users");
+            }
+            
+            if (string.IsNullOrWhiteSpace(id))
+                return BadRequest();
+
+            TempData["Success"] = "Użytkownik został pomyślnie usunięty.";
+            return RedirectToAction("Users");
+        }
     }
 }
