@@ -128,61 +128,61 @@
 <a class="btn btn-secondary mt-2" href="@Url.Action("Index")">Powrót Do Listy</a>
 @section Scripts {
     <script>
-        $(function(){
-            $("input, textarea").removeAttr("data-val");
-            $("input, textarea").removeAttr("data-val-required");
-        });
-        $(document).ready(function(){
-            $('.selectpicker').selectpicker();
-        });
-    </script>
-    <script>
-        const startPicker = flatpickr("#serviceStartDate", {
-            dateFormat: "d.m.Y",
-           allowInput: false
-       });
-    
-        const endPicker = flatpickr("#serviceEndDate", {
-            dateFormat: "d.m.Y",
-            allowInput: false
-        });
-    
-        // klik na ikonę otwiera kalendarz
-       document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
-        document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
-    </script>
-    <script>
-        const startInput = document.getElementById("serviceStartDate");
-        const endInput = document.getElementById("serviceEndDate");
-    
-        const endPicker = flatpickr(endInput, {
-            altInput: true,
-            altFormat: "d.m.Y",
-            dateFormat: "Y-m-d",
-            allowInput: false
-       });
-    
-        const startPicker = flatpickr(startInput, {
-            altInput: true,
-            altFormat: "d.m.Y",
-            dateFormat: "Y-m-d",
-            allowInput: false,
-            onChange: function (selectedDates) {
-                if (selectedDates.length > 0) {
-                    endPicker.set("minDate", selectedDates[0]);
-    
-                    const endDate = endPicker.selectedDates[0];
-                    if (endDate && endDate < selectedDates[0]) {
-                       endPicker.clear();
-                   }
-               } else {
-                    endPicker.set("minDate", null);
-                }
-            }
-        });
-    
-        // klik na ikonę otwiera kalendarz
-        document.getElementById("startIcon").addEventListener("click", () => startPicker.open());
-        document.getElementById("endIcon").addEventListener("click", () => endPicker.open());
+      $(function(){
+        $("input, textarea").removeAttr("data-val").removeAttr("data-val-required");
+        $('.selectpicker').selectpicker?.();
+      });
+
+      const startInput = document.getElementById("serviceStartDate");
+      const endInput   = document.getElementById("serviceEndDate");
+
+      // Wymuś ISO z modelu (żeby nie było starych wartości w dd.MM.yyyy)
+      startInput.value = '@(Model?.ServiceStartDate.HasValue == true ? Model.ServiceStartDate.Value.ToString("yyyy-MM-dd") : "")';
+      endInput.value   = '@(Model?.ServiceEndDate.HasValue   == true ? Model.ServiceEndDate.Value.ToString("yyyy-MM-dd")   : "")';
+
+      // JEDNA inicjalizacja flatpickr na każde pole
+      const fpStart = flatpickr(startInput, {
+        altInput: true,           // użytkownik widzi PL
+        altFormat: "d.m.Y",
+        dateFormat: "Y-m-d",      // do serwera leci ISO
+        allowInput: false,
+        onChange: function (selectedDates) {
+          if (selectedDates.length > 0) {
+            fpEnd.set("minDate", selectedDates[0]);
+            const endDate = fpEnd.selectedDates[0];
+            if (endDate && endDate < selectedDates[0]) fpEnd.clear();
+          } else {
+            fpEnd.set("minDate", null);
+          }
+        }
+      });
+
+      const fpEnd = flatpickr(endInput, {
+        altInput: true,
+        altFormat: "d.m.Y",
+        dateFormat: "Y-m-d",
+        allowInput: false
+      });
+
+      // Ustaw daty z value (jeśli są)
+      if (startInput.value) fpStart.setDate(startInput.value, true, "Y-m-d");
+      if (endInput.value)   fpEnd.setDate(endInput.value,   true, "Y-m-d");
+
+      // Ikony
+      document.getElementById("startIcon").addEventListener("click", () => fpStart.open());
+      document.getElementById("endIcon").addEventListener("click",   () => fpEnd.open());
+
+      // Bezpiecznik przed submit (gdyby coś jednak wpisało dd.MM.yyyy do value)
+      function toIsoIfPolishFmt(v){
+        if(!v) return v;
+        const m = v.trim().match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if(!m) return v;
+        const dd = m[1].padStart(2,'0'), mm = m[2].padStart(2,'0'), yyyy = m[3];
+        return `${yyyy}-${mm}-${dd}`;
+      }
+      $('form').on('submit', function(){
+        startInput.value = toIsoIfPolishFmt(startInput.value);
+        endInput.value   = toIsoIfPolishFmt(endInput.value);
+      });
     </script>
 }

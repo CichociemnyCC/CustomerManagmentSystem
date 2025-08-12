@@ -36,6 +36,10 @@
 
 Changelog
 
+Aktualizacja 1.5 (DateFixedAgain)
+-Naprawiono edycje dat w client/edit. Podczas próby edycji wpisu data sie resetowała.
+-Naprawiono edycja dat w lead.edit. Tam to wgl katastrofa była, skrypt startowany 2 razy
+
 Aktualizacja 1.4 (DatabaseShenanigans)
 -Naprawiono w realizacjach zapisywanie stanu realizacji w bazie danych
 -Naprawiono resetowanie się UI w realizacja po wciśnięciu ,,Edytuj" i ,,Zapisz"

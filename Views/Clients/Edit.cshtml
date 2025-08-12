@@ -138,40 +138,33 @@
     </script>
     <script>
         const startInput = document.getElementById("serviceStartDate");
-        const endInput = document.getElementById("serviceEndDate");
+        const endInput   = document.getElementById("serviceEndDate");
 
-        // Funkcja zamienia "dd.mm.yyyy" -> "yyyy-mm-dd"
-        function parsePolishDateToIso(dateString) {
-            const parts = dateString.split(".");
-            if (parts.length !== 3) return null;
-            const [day, month, year] = parts;
-            return `${year}-${month}-${day}`;
-        }
+        // 1) Wymuś wartość z modelu w ISO zanim odpalimy flatpickr
+        startInput.value = '@(Model?.ServiceStartDate.HasValue == true ? Model.ServiceStartDate.Value.ToString("yyyy-MM-dd") : "")';
+        endInput.value   = '@(Model?.ServiceEndDate.HasValue   == true ? Model.ServiceEndDate.Value.ToString("yyyy-MM-dd")   : "")';
 
-        flatpickr(startInput, {
+        // 2) Inicjalizacja bez defaultDate (nic nie „zgadujemy”)
+        const fpStart = flatpickr(startInput, {
             altInput: true,
             altFormat: "d.m.Y",
             dateFormat: "Y-m-d",
-            allowInput: false,
-            defaultDate: parsePolishDateToIso(startInput.value)
+            allowInput: false
         });
-
-        flatpickr(endInput, {
+        const fpEnd = flatpickr(endInput, {
             altInput: true,
             altFormat: "d.m.Y",
             dateFormat: "Y-m-d",
-            allowInput: false,
-            defaultDate: parsePolishDateToIso(endInput.value)
+            allowInput: false
         });
 
-        // Klik na ikonę otwiera kalendarz
-        document.getElementById("startIcon").addEventListener("click", () => {
-            document.querySelector("#serviceStartDate")._flatpickr.open();
-        });
+        // 3) Ustaw datę tylko jeśli input ma wartość
+        if (startInput.value) fpStart.setDate(startInput.value, true, "Y-m-d");
+        if (endInput.value)   fpEnd.setDate(endInput.value,   true, "Y-m-d");
 
-        document.getElementById("endIcon").addEventListener("click", () => {
-            document.querySelector("#serviceEndDate")._flatpickr.open();
-        });
+        // Ikony otwierające kalendarz
+        document.getElementById("startIcon").addEventListener("click", () => fpStart.open());
+        document.getElementById("endIcon").addEventListener("click", () => fpEnd.open());
     </script>
 }
 
